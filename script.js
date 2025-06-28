@@ -41,9 +41,11 @@ function drawPoints(pts) {
 }
 
 /**
- * Oblicza iloczyn wektorowy (cross product) dla trzech punktów:
- * o - punkt odniesienia, a i b - kolejne punkty.
- * Wynik > 0: skręt w lewo, < 0: skręt w prawo, = 0: współliniowość.
+  W algorytmie stosuje się **test orientacji** (iloczyn wektorowy) dla trzech kolejnych punktów:
+  cross(o, a, b) = (a.x - o.x)(b.y - o.y) - (a.y - o.y)(b.x - o.x)
+
+ * > 0 – skręt w lewo → punkt zachowuje wypukłość
+ * ≤ 0 – skręt w prawo lub współliniowość → punkt usuwany z otoczki
  */
 function cross(o, a, b) {
   return (a.x - o.x) * (b.y - o.y) - (a.y - o.y) * (b.x - o.x);
