@@ -4,6 +4,7 @@ const ctx = canvas.getContext("2d");
 const output = document.getElementById("output");
 const clearBtn = document.getElementById("clearBtn");
 const addPointBtn = document.getElementById("manualAddPointForm");
+const removeNonHullBtn = document.getElementById("removeNonHullBtn");
 
 // Stała określająca promień rysowanych punktów (decyduje czy zostanie dodany nowy punkt)
 const POINT_RADIUS = 6;
@@ -120,13 +121,19 @@ function showOutput(hullPoints, allPoints) {
     type = "punkt";
   } else {
     switch (hullPoints.length) {
-      case 2: type = "odcinek"; break;
-      case 3: type = "trójkąt"; break;
-      case 4: type = "czworokąt"; break;
-      default: type = `${hullPoints.length}-kąt`;
+      case 2:
+        type = "odcinek";
+        break;
+      case 3:
+        type = "trójkąt";
+        break;
+      case 4:
+        type = "czworokąt";
+        break;
+      default:
+        type = `${hullPoints.length}-kąt`;
     }
   }
-
 
   // Generujemy HTML z listą punktów otoczki
   const html =
@@ -266,7 +273,9 @@ addPointBtn.addEventListener("submit", function (e) {
     this.reset();
     redraw();
   } else {
-    alert(`Wartości muszą mieścić się w zakresie od -${COORD_LIMIT} do ${COORD_LIMIT}`);
+    alert(
+      `Wartości muszą mieścić się w zakresie od -${COORD_LIMIT} do ${COORD_LIMIT}`
+    );
   }
 });
 
@@ -280,7 +289,12 @@ function removePoint(index) {
 }
 
 function isPointValidToAdd(x, y) {
-  return !isNaN(x) && !isNaN(y) && Math.abs(x) <= COORD_LIMIT && Math.abs(y) <= COORD_LIMIT;
+  return (
+    !isNaN(x) &&
+    !isNaN(y) &&
+    Math.abs(x) <= COORD_LIMIT &&
+    Math.abs(y) <= COORD_LIMIT
+  );
 }
 
 // Mapowanie na koordynaty canvas (dodane dla liczb ujemnych)
@@ -295,6 +309,17 @@ function selectPoint(index) {
   selectedPoint = index;
   redraw();
 }
+
+removeNonHullBtn.addEventListener("click", () => {
+  const hull = convexHull(points);
+  // Filtrujemy tylko punkty, które są częścią otoczki
+  points = points.filter(p =>
+    hull.some(hp => hp.x === p.x && hp.y === p.y)
+  );
+  selectedPoint = null;
+  redraw();
+});
+
 
 // Inicjalne rysowanie po załadowaniu strony
 redraw();
