@@ -266,28 +266,24 @@ redraw()
 
 // Obsługa dodawania punktu ręcznie
 addPointBtn.addEventListener("submit", function (e) {
-e.preventDefault()
-const x = parseFloat(document.getElementById("inputX").value)
-const y = parseFloat(document.getElementById("inputY").value)
-if (isPointValidToAdd(x, y)) {
-    const clickedIndex = getClickedPointIndex(x, y)
-    if (clickedIndex !== -1) {
-    selectedPoint = clickedIndex // Zaznaczamy punkt
-    alert("Punkt znajduje się zbyt blisko istniejącego.")
-    this.reset()
-    } else {
+  e.preventDefault()
+  const x = parseFloat(document.getElementById("inputX").value)
+  const y = parseFloat(document.getElementById("inputY").value)
+  if (isPointValidToAdd(x, y)) {
+    if (points.some(p => p.x === x && p.y === y)) {
+      alert("Taki punkt już istnieje.")
+      this.reset()
+      return
+    }
     points.push({ x, y })
     selectedPoint = points.length - 1
     this.reset()
     redraw()
-    }
-} else {
-    alert(
-    `Wartości muszą mieścić się w zakresie od -${COORD_LIMIT} do ${COORD_LIMIT}`,
-    )
-}
-redraw()
+  } else {
+    alert(`Wartości muszą mieścić się w zakresie od -${COORD_LIMIT} do ${COORD_LIMIT}`)
+  }
 })
+
 
 // Usuwa konkretny punkt z listy
 function removePoint(index) {
@@ -317,3 +313,38 @@ return {
 
 // Inicjalne rysowanie po załadowaniu strony
 redraw()
+
+
+// cross(o, a, b): obliczenie iloczynu wektorowego OA x OB
+// To klasyczny test orientacji (ang. orientation test)
+// Zwraca wartosc dodatnia dla skrętu w lewo (counter-clockwise),
+// ujemna dla skrętu w prawo (clockwise), zero dla współliniowości
+// Jest to podstawowy element wielu algorytmów geometrii obliczeniowej
+
+// convexHull(): realizacja algorytmu monotonicznego łańcucha Andrewsa
+// Jest to zmodyfikowana wersja algorytmu Grahama
+// Algorytm dzieli otoczkę na dwie części: dolną i górną
+// Działa w czasie O(n log n) dzięki sortowaniu punktów
+// Każda z części budowana jest iteracyjnie przy pomocy testu orientacji
+// Punkt dodawany do otoczki tylko jeśli zachowuje wypukłość
+// Usuwanie ostatniego punktu następuje przy skręcie w prawo lub współliniowości
+
+// toCanvasCoords(): przekształcenie układu współrzędnych kartezjańskich [-250,250]
+// na współrzędne piksela na canvasie (gdzie punkt (0,0) jest na środku)
+
+// getClickedPointIndex(): oblicza euklidesową odległość punktu od kliknięcia
+// sprawdzając, czy użytkownik kliknął w istnieący punkt
+
+// drawPoints() i drawHull(): odpowiedzialne za rysowanie punktów i linii otoczki
+// Otoczka łączy punkty w kolejności zgodnej z przeciwną do ruchu wskazówek zegara (CCW)
+
+// redraw(): funkcja odświeżająca canvas, łączy wszystkie elementy:
+// - siatkę układu współrzędnych (drawGrid)
+// - punkty użytkownika (drawPoints)
+// - otoczkę wypukłą (drawHull)
+// - opis tekstowy (showOutput)
+
+// Łącznie cały kod jest ilustracją użycia fundamentalnych narzędzi geometrii obliczeniowej:
+// - test orientacji (iloczyn wektorowy)
+// - sortowanie leksykograficzne punktów
+// - budowa otoczki wypukłej (Andrews monotone chain algorithm)
