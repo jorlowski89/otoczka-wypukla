@@ -134,8 +134,15 @@ function showOutput(hullPoints, allPoints) {
     }
   }
 
+  let html = "";
+  // Informacja o zaznaczonym punkcie (jeśli istnieje)
+  if (selectedPoint !== null && points[selectedPoint]) {
+    const p = points[selectedPoint];
+    html += `<p class="mb-2"><strong class="text-blue-600">Zaznaczony punkt:</strong> (${p.x}, ${p.y})</p>`;
+  }
+
   // Generujemy HTML z listą punktów otoczki
-  let html =
+  html +=
     `<p class="mb-2"><strong class="text-green-600">Otoczka wypukła:</strong> ${type}</p><ul class="space-y-1">` +
     points
       .map(
@@ -147,11 +154,6 @@ function showOutput(hullPoints, allPoints) {
       )
       .join("") +
     "</ul>";
-  // Informacja o zaznaczonym punkcie (jeśli istnieje)
-  if (selectedPoint !== null && points[selectedPoint]) {
-    const p = points[selectedPoint];
-    html += `<p class="mt-4"><strong class="text-blue-600">Zaznaczony punkt:</strong> (${p.x}, ${p.y})</p>`;
-  }
 
   output.innerHTML = html;
 }
