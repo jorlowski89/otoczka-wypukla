@@ -120,34 +120,21 @@ function showOutput(hullPoints, allPoints) {
     type = "punkt";
   } else {
     switch (hullPoints.length) {
-      case 2:
-        type = "odcinek";
-        break;
-      case 3:
-        type = "trójkąt";
-        break;
-      case 4:
-        type = "czworokąt";
-        break;
-      default:
-        type = `${hullPoints.length}-kąt`;
+      case 2: type = "odcinek"; break;
+      case 3: type = "trójkąt"; break;
+      case 4: type = "czworokąt"; break;
+      default: type = `${hullPoints.length}-kąt`;
     }
   }
 
-  let html = "";
-  // Informacja o zaznaczonym punkcie (jeśli istnieje)
-  if (selectedPoint !== null && points[selectedPoint]) {
-    const p = points[selectedPoint];
-    html += `<p class="mb-2"><strong class="text-blue-600">Zaznaczony punkt:</strong> (${p.x}, ${p.y})</p>`;
-  }
 
   // Generujemy HTML z listą punktów otoczki
-  html +=
+  const html =
     `<p class="mb-2"><strong class="text-green-600">Otoczka wypukła:</strong> ${type}</p><ul class="space-y-1">` +
     points
       .map(
         (p, i) => `
-<li class="flex justify-between items-center border px-2 py-1 rounded">
+<li class="flex justify-between items-center border px-2 py-1 rounded ${selectedPoint === i ? "bg-blue-100 font-semibold ring-1 ring-blue-300" : ""}">
 <span>(${p.x}, ${p.y})</span>
 <button onclick="removePoint(${i})" class="text-red-500 hover:text-red-700 text-sm">Usuń</button>
 </li>`
@@ -172,9 +159,7 @@ function drawGrid() {
     ctx.moveTo(cx, 0);
     ctx.lineTo(cx, canvas.height);
     ctx.stroke();
-    if (x !== 0) {
-      ctx.fillText(x, cx + 2, canvas.height / 2 - 2);
-    }
+    if (x !== 0) ctx.fillText(x, cx + 2, canvas.height / 2 - 2);
   }
 
   for (let y = -COORD_LIMIT; y <= COORD_LIMIT; y += step) {
@@ -183,9 +168,7 @@ function drawGrid() {
     ctx.moveTo(0, cy);
     ctx.lineTo(canvas.width, cy);
     ctx.stroke();
-    if (y !== 0) {
-      ctx.fillText(y, canvas.width / 2 + 4, cy - 4);
-    }
+    if (y !== 0) ctx.fillText(y, canvas.width / 2 + 4, cy - 4);
   }
 
   // axes
@@ -280,9 +263,7 @@ addPointBtn.addEventListener("submit", function (e) {
     this.reset();
     redraw();
   } else {
-    alert(
-      `Wartości muszą mieścić się w zakresie od -${COORD_LIMIT} do ${COORD_LIMIT}`
-    );
+    alert(`Wartości muszą mieścić się w zakresie od -${COORD_LIMIT} do ${COORD_LIMIT}`);
   }
 });
 
@@ -296,12 +277,7 @@ function removePoint(index) {
 }
 
 function isPointValidToAdd(x, y) {
-  return (
-    !isNaN(x) &&
-    !isNaN(y) &&
-    Math.abs(x) <= COORD_LIMIT &&
-    Math.abs(y) <= COORD_LIMIT
-  );
+  return !isNaN(x) && !isNaN(y) && Math.abs(x) <= COORD_LIMIT && Math.abs(y) <= COORD_LIMIT;
 }
 
 // Mapowanie na koordynaty canvas (dodane dla liczb ujemnych)
@@ -314,4 +290,3 @@ function toCanvasCoords(x, y) {
 
 // Inicjalne rysowanie po załadowaniu strony
 redraw();
-
