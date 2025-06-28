@@ -134,9 +134,12 @@ function showOutput(hullPoints, allPoints) {
     points
       .map(
         (p, i) => `
-<li class="flex justify-between items-center border px-2 py-1 rounded ${selectedPoint === i ? "bg-blue-100 font-semibold ring-1 ring-blue-300" : ""}">
-<span>(${p.x}, ${p.y})</span>
-<button onclick="removePoint(${i})" class="text-red-500 hover:text-red-700 text-sm">Usuń</button>
+<li onclick="selectPoint(${i})"
+  class="flex justify-between items-center border px-2 py-1 rounded cursor-pointer ${
+    selectedPoint === i ? "bg-blue-100 font-semibold ring-1 ring-blue-300" : ""
+  }">
+  <span>(${p.x}, ${p.y})</span>
+  <button onclick="event.stopPropagation(); removePoint(${i})" class="text-red-500 hover:text-red-700 text-sm">Usuń</button>
 </li>`
       )
       .join("") +
@@ -286,6 +289,11 @@ function toCanvasCoords(x, y) {
     x: canvas.width / 2 + x,
     y: canvas.height / 2 - y,
   };
+}
+
+function selectPoint(index) {
+  selectedPoint = index;
+  redraw();
 }
 
 // Inicjalne rysowanie po załadowaniu strony
