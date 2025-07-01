@@ -25,12 +25,13 @@ let points = [
  * Rysuje wszystkie punkty na canvasie.
  * Zaznaczony punkt (jeśli istnieje) jest dodatkowo obrysowany na niebiesko.
  */
-function drawPoints(pts) {
+function drawPoints(pts, hullPoints = []) {
   pts.forEach((p, index) => {
     const { x, y } = toCanvasCoords(p.x, p.y);
     ctx.beginPath();
     ctx.arc(x, y, POINT_RADIUS, 0, 2 * Math.PI);
-    ctx.fillStyle = "red";
+    const isOnHull = hullPoints.some((hp) => hp.x === p.x && hp.y === p.y);
+    ctx.fillStyle = isOnHull ? "green" : "red";
     ctx.fill();
     if (selectedPoint === index) {
       ctx.strokeStyle = "blue";
@@ -199,9 +200,9 @@ function drawGrid() {
 function redraw() {
   ctx.clearRect(0, 0, canvas.width, canvas.height); // Czyścimy cały canvas
   drawGrid(); // Rysujemy siatkę
-  drawPoints(points); // Rysujemy wszystkie punkty
   if (points.length >= 1) {
     const hull = convexHull(points); // Wyznaczamy otoczkę wypukłą
+    drawPoints(points, hull); // Rysujemy wszystkie punkty
     drawHull(hull); // Rysujemy otoczkę
     showOutput(hull, points); // Wyświetlamy informacje
   } else {
@@ -315,13 +316,12 @@ function selectPoint(index) {
 removeNonHullBtn.addEventListener("click", () => {
   const hull = convexHull(points);
   // Filtrujemy tylko punkty, które są częścią otoczki
-  points = points.filter(p =>
-    hull.some(hp => hp.x === p.x && hp.y === p.y)
+  points = points.filter((p) =>
+    hull.some((hp) => hp.x === p.x && hp.y === p.y)
   );
   selectedPoint = null;
   redraw();
 });
-
 
 // Inicjalne rysowanie po załadowaniu strony
 redraw();
